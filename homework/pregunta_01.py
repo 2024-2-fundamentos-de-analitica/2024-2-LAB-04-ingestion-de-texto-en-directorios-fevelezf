@@ -54,8 +54,8 @@ def pregunta_01():
 
     * phrase: Texto de la frase. hay una frase por cada archivo de texto.
     * sentiment: Sentimiento de la frase. Puede ser "positive", "negative"
-      o "neutral". Este corresponde al nombre del directorio donde se
-      encuentra ubicado el archivo.
+    o "neutral". Este corresponde al nombre del directorio donde se
+    encuentra ubicado el archivo.
 
     Cada archivo tendria una estructura similar a la siguiente:
 
@@ -71,3 +71,29 @@ def pregunta_01():
 
 
     """
+
+import os
+import pandas as pd
+
+def creacion(carpeta_input, output_file):
+    data = []
+    for sentimiento in ['positive', 'negative', 'neutral']:
+        directorio_senti = os.path.join(carpeta_input, sentimiento)
+        if os.path.exists(directorio_senti):  
+            for filename in os.listdir(directorio_senti):
+                if filename.endswith('.txt'):
+                    with open(os.path.join(directorio_senti, filename), 'r') as file:
+                        phrase = file.read().strip()
+                        data.append({'phrase': phrase, 'target': sentimiento})
+    
+    df = pd.DataFrame(data)
+    df.to_csv(output_file, index=False)
+
+# Crear el directorio de salida si no existe
+os.makedirs('files/output', exist_ok=True)
+
+# Crear train_dataset.csv
+creacion('files/input/train', 'files/output/train_dataset.csv')
+
+# Crear test_dataset.csv
+creacion('files/input/test', 'files/output/test_dataset.csv')
